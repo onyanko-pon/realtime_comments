@@ -1,13 +1,28 @@
 package main
 
-import "fmt"
-import "net/http"
+import (
+	"net/http"
 
-func handler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "Hello, World")
-}
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+)
 
 func main() {
-    http.HandleFunc("/", handler) // ハンドラを登録してウェブページを表示させる
-  	http.ListenAndServe(":8080", nil)
+	// Echo instance
+	e := echo.New()
+
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	// Routes
+	e.GET("/", hello)
+
+	// Start server
+	e.Logger.Fatal(e.Start(":8080"))
+}
+
+// Handler
+func hello(c echo.Context) error {
+	return c.String(http.StatusOK, "Hello, World!")
 }
